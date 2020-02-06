@@ -13,21 +13,21 @@ import org.bukkit.event.Listener;
 
 public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Cacheable {
 
-    Player getWinner;
+    private ChatReaction chatReaction;
+    private Player winner;
 
     @Override
     public boolean canRegister() {
-        return Bukkit.getPluginManager().getPlugin(getPlugin()) != null;
+        return Bukkit.getPluginManager().getPlugin("ChatReaction") != null;
     }
 
     @Override
     public boolean register() {
-
-        if (!canRegister()) {
-            return false;
+        chatReaction = (ChatReaction) Bukkit.getPluginManager().getPlugin("ChatReaction");
+        if (chatReaction != null) {
+            return super.register();
         }
-
-        return me.clip.placeholderapi.PlaceholderAPI.registerPlaceholderHook(getIdentifier(), this);
+        return false;
     }
 
     @Override
@@ -41,23 +41,18 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
     }
 
     @Override
-    public String getPlugin() {
-        return "ChatReaction";
-    }
-
-    @Override
     public String getVersion() {
         return "1.2.0";
     }
 
     @Override
     public void clear() {
-        getWinner = null;
+        winner = null;
     }
 
     @EventHandler
     public void onReactionWin(ReactionWinEvent event) {
-        getWinner = event.getWinner();
+        winner = event.getWinner();
     }
 
     @Override
@@ -98,7 +93,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
                 break;
 
             case "latest_winner":
-                result = getWinner != null ? getWinner.getName() : " ";
+                result = winner != null ? winner.getName() : " ";
                 break;
 
             default:
