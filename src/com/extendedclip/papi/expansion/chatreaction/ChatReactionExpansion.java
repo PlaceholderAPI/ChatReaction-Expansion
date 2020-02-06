@@ -11,21 +11,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 
 public class ChatReactionExpansion extends PlaceholderExpansion implements Cacheable {
-	
+
 	Player getWinner;
 
 	@Override
 	public boolean canRegister() {
 		return Bukkit.getPluginManager().getPlugin(getPlugin()) != null;
 	}
-	
+
 	@Override
 	public boolean register() {
-		
+
 		if (!canRegister()) {
 			return false;
 		}
-		
+
 		return me.clip.placeholderapi.PlaceholderAPI.registerPlaceholderHook(getIdentifier(), this);
 	}
 
@@ -55,16 +55,17 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Cache
 		if (p == null) {
 			return "";
 		}
-		
+
 		if (identifier.equals("wins")) {
 			return String.valueOf(ReactionAPI.getWins(p));
 		}
-		
+
 		if (identifier.equals("type")) {
-            		if (ReactionAPI.isStarted()) {
-                		if (ChatReaction.isScrambled()) return "scramble";
-                		else return "type";
-            	} else return "none";
+			if (ReactionAPI.isStarted()) {
+				if (ChatReaction.isScrambled()) return "scramble";
+				else return "type";
+			} else return "none";
+		}
 
 		if (identifier.equals("isStarted")) {
 			return String.valueOf(ReactionAPI.isStarted());
@@ -81,20 +82,21 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Cache
 		if (identifier.equals("startTime")) {
 			return String.valueOf(ReactionAPI.getStartTime());
 		}
-		return null;
-			
-		if (identifier.equals("latestWinner")) {
-           		return getWinner != null ? getWinner.getName() : " ";
-        	}
-	}
-		
-    	@Override
-    	public void clear() {
-        	getWinner = null;
-    	}
 
-    	@EventHandler
-    	public void playerWinEvent(ReactionWinEvent event) {
-        	getWinner = event.getWinner();
-    	}		
-}
+		if (identifier.equals("latestWinner")) {
+			return getWinner != null ? getWinner.getName() : " ";
+		}
+
+		return null;
+	}
+
+		@Override
+		public void clear () {
+			getWinner = null;
+		}
+
+		@EventHandler
+		public void playerWinEvent (ReactionWinEvent event){
+			getWinner = event.getWinner();
+		}
+	}
