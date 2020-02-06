@@ -9,8 +9,9 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-public class ChatReactionExpansion extends PlaceholderExpansion implements Cacheable {
+public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Cacheable {
 
 	Player getWinner;
 
@@ -46,7 +47,17 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Cache
 
 	@Override
 	public String getVersion() {
-		return "1.0.4";
+		return "1.2.0";
+	}
+
+	@Override
+	public void clear () {
+		getWinner = null;
+	}
+
+	@EventHandler
+	public void ReactionWinEvent (ReactionWinEvent event){
+		getWinner = event.getWinner();
 	}
 
 	@Override
@@ -89,14 +100,6 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Cache
 
 		return null;
 	}
+}
 
-		@Override
-		public void clear () {
-			getWinner = null;
-		}
 
-		@EventHandler
-		public void playerWinEvent (ReactionWinEvent event){
-			getWinner = event.getWinner();
-		}
-	}
