@@ -72,11 +72,11 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Cache
 		}
 
 		if (identifier.equals("displayWord")) {
-			return String.valueOf(ReactionAPI.getDisplayWord());
+			return ReactionAPI.getDisplayWord() != null ? ReactionAPI.getDisplayWord() : " ";
 		}
 
 		if (identifier.equals("reactionWord")) {
-			return String.valueOf(ReactionAPI.getReactionWord());
+			return ReactionAPI.getReactionWord() != null ? ReactionAPI.getReactionWord() : " ";
 		}
 
 		if (identifier.equals("startTime")) {
