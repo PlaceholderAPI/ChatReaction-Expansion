@@ -40,7 +40,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getVersion() {
-		return "1.0.1";
+		return "1.0.2";
 	}
 
 	@Override
@@ -53,7 +53,22 @@ public class ChatReactionExpansion extends PlaceholderExpansion {
 		if (identifier.equals("wins")) {
 			return String.valueOf(ReactionAPI.getWins(p));
 		}
-		
+
+		if (identifier.equals("isStarted")) {
+			return String.valueOf(ReactionAPI.isStarted());
+		}
+
+		if (identifier.equals("displayWord")) {
+			return String.valueOf(ReactionAPI.getDisplayWord());
+		}
+
+		if (identifier.equals("reactionWord")) {
+			return String.valueOf(ReactionAPI.getReactionWord());
+		}
+
+		if (identifier.equals("startTime")) {
+			return String.valueOf(ReactionAPI.getStartTime());
+		}
 		return null;
 	}
 }
