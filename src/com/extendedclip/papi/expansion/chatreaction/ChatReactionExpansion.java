@@ -63,7 +63,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Cache
 		if (identifier.equals("type")) {
 			if (ReactionAPI.isStarted()) {
 				if (ChatReaction.isScrambled()) return "scramble";
-				else return "type";
+				else return "reaction";
 			} else return "none";
 		}
 
