@@ -13,93 +13,99 @@ import org.bukkit.event.Listener;
 
 public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Cacheable {
 
-	Player getWinner;
+    Player getWinner;
 
-	@Override
-	public boolean canRegister() {
-		return Bukkit.getPluginManager().getPlugin(getPlugin()) != null;
-	}
+    @Override
+    public boolean canRegister() {
+        return Bukkit.getPluginManager().getPlugin(getPlugin()) != null;
+    }
 
-	@Override
-	public boolean register() {
+    @Override
+    public boolean register() {
 
-		if (!canRegister()) {
-			return false;
-		}
+        if (!canRegister()) {
+            return false;
+        }
 
-		return me.clip.placeholderapi.PlaceholderAPI.registerPlaceholderHook(getIdentifier(), this);
-	}
+        return me.clip.placeholderapi.PlaceholderAPI.registerPlaceholderHook(getIdentifier(), this);
+    }
 
-	@Override
-	public String getAuthor() {
-		return "clip";
-	}
+    @Override
+    public String getAuthor() {
+        return "clip";
+    }
 
-	@Override
-	public String getIdentifier() {
-		return "chatreaction";
-	}
+    @Override
+    public String getIdentifier() {
+        return "chatreaction";
+    }
 
-	@Override
-	public String getPlugin() {
-		return "ChatReaction";
-	}
+    @Override
+    public String getPlugin() {
+        return "ChatReaction";
+    }
 
-	@Override
-	public String getVersion() {
-		return "1.2.0";
-	}
+    @Override
+    public String getVersion() {
+        return "1.2.0";
+    }
 
-	@Override
-	public void clear () {
-		getWinner = null;
-	}
+    @Override
+    public void clear() {
+        getWinner = null;
+    }
 
-	@EventHandler
-	public void ReactionWinEvent (ReactionWinEvent event){
-		getWinner = event.getWinner();
-	}
+    @EventHandler
+    public void onReactionWin(ReactionWinEvent event) {
+        getWinner = event.getWinner();
+    }
 
-	@Override
-	public String onPlaceholderRequest(Player p, String identifier) {
+    @Override
+    public String onPlaceholderRequest(Player p, String identifier) {
 
-		if (p == null) {
-			return "";
-		}
+        if (p == null) {
+            return "";
+        }
 
-		if (identifier.equals("wins")) {
-			return String.valueOf(ReactionAPI.getWins(p));
-		}
+        final Object result;
 
-		if (identifier.equals("type")) {
-			if (ReactionAPI.isStarted()) {
-				if (ChatReaction.isScrambled()) return "scramble";
-				else return "reaction";
-			} else return "none";
-		}
+        switch (identifier.toLowerCase()) {
+            case "wins":
+                return String.valueOf(ReactionAPI.getWins(p));
 
-		if (identifier.equals("isStarted")) {
-			return String.valueOf(ReactionAPI.isStarted());
-		}
+            case "type":
+                if (ReactionAPI.isStarted()) {
+                    result = ChatReaction.isScrambled() ? "scramble" : "reaction";
+                } else {
+                    result = "none";
+                }
+                break;
 
-		if (identifier.equals("displayWord")) {
-			return ReactionAPI.getDisplayWord() != null ? ReactionAPI.getDisplayWord() : " ";
-		}
+            case "active_round":
+                result = ReactionAPI.isStarted();
+                break;
 
-		if (identifier.equals("reactionWord")) {
-			return ReactionAPI.getReactionWord() != null ? ReactionAPI.getReactionWord() : " ";
-		}
+            case "display_word":
+                result = ReactionAPI.getDisplayWord() != null ? ReactionAPI.getDisplayWord() : " ";
+                break;
 
-		if (identifier.equals("startTime")) {
-			return String.valueOf(ReactionAPI.getStartTime());
-		}
+            case "reaction_word":
+                result = ReactionAPI.getReactionWord() != null ? ReactionAPI.getReactionWord() : " ";
+                break;
 
-		if (identifier.equals("latestWinner")) {
-			return getWinner != null ? getWinner.getName() : " ";
-		}
+            case "start_time":
+                result = ReactionAPI.getStartTime();
+                break;
 
-		return null;
-	}
+            case "latest_winner":
+                result = getWinner != null ? getWinner.getName() : " ";
+                break;
+
+            default:
+                return null;
+        }
+        return String.valueOf(result);
+    }
 }
 
 
