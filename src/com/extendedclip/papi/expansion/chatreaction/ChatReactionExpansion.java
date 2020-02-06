@@ -1,12 +1,18 @@
 package com.extendedclip.papi.expansion.chatreaction;
 
+import me.clip.chatreaction.ChatReaction;
 import me.clip.chatreaction.ReactionAPI;
+import me.clip.chatreaction.events.ReactionWinEvent;
+import me.clip.placeholderapi.expansion.Cacheable;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 
-public class ChatReactionExpansion extends PlaceholderExpansion {
+public class ChatReactionExpansion extends PlaceholderExpansion implements Cacheable {
+	
+	Player getWinner;
 
 	@Override
 	public boolean canRegister() {
@@ -40,7 +46,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getVersion() {
-		return "1.0.2";
+		return "1.0.3";
 	}
 
 	@Override
@@ -53,6 +59,12 @@ public class ChatReactionExpansion extends PlaceholderExpansion {
 		if (identifier.equals("wins")) {
 			return String.valueOf(ReactionAPI.getWins(p));
 		}
+		
+		if (identifier.equals("type")) {
+            		if (ReactionAPI.isStarted()) {
+                		if (ChatReaction.isScrambled()) return "scramble";
+                		else return "type";
+            	} else return "none";
 
 		if (identifier.equals("isStarted")) {
 			return String.valueOf(ReactionAPI.isStarted());
@@ -70,5 +82,19 @@ public class ChatReactionExpansion extends PlaceholderExpansion {
 			return String.valueOf(ReactionAPI.getStartTime());
 		}
 		return null;
+			
+		if (identifier.equals("latestWinner")) {
+           		return getWinner != null ? getWinner.getName() : " ";
+        	}
 	}
+		
+    	@Override
+    	public void clear() {
+        	getWinner = null;
+    	}
+
+    	@EventHandler
+    	public void playerWinEvent(ReactionWinEvent event) {
+        	getWinner = event.getWinner();
+    	}		
 }
