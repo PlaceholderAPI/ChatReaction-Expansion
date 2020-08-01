@@ -7,6 +7,7 @@ import me.clip.placeholderapi.expansion.Cacheable;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,17 +18,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public boolean canRegister() {
-        return Bukkit.getPluginManager().getPlugin(getPlugin()) != null;
-    }
-
-    @Override
-    public boolean register() {
-
-        if (!canRegister()) {
-            return false;
-        }
-
-        return me.clip.placeholderapi.PlaceholderAPI.registerPlaceholderHook(getIdentifier(), this);
+        return Bukkit.getPluginManager().getPlugin(getRequiredPlugin()) != null;
     }
 
     @Override
@@ -41,7 +32,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
     }
 
     @Override
-    public String getPlugin() {
+    public String getRequiredPlugin() {
         return "ChatReaction";
     }
 
@@ -61,7 +52,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
     }
 
     @Override
-    public String onPlaceholderRequest(Player p, String identifier) {
+    public String onRequest(OfflinePlayer p, String identifier) {
 
         if (p == null) {
             return "";
