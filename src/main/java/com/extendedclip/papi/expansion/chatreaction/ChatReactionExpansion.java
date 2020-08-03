@@ -4,6 +4,7 @@ import me.clip.chatreaction.ChatReaction;
 import me.clip.chatreaction.ReactionAPI;
 import me.clip.chatreaction.events.ReactionWinEvent;
 import me.clip.placeholderapi.expansion.Cacheable;
+import me.clip.placeholderapi.expansion.Configurable;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.Bukkit;
@@ -12,7 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Cacheable {
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Cacheable, Configurable {
 
     Player getWinner;
 
@@ -23,7 +28,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public String getAuthor() {
-        return "clip";
+        return "kaliber";
     }
 
     @Override
@@ -38,12 +43,19 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public String getVersion() {
-        return "1.2.0";
+        return "1.3.0";
     }
 
     @Override
     public void clear() {
         getWinner = null;
+    }
+
+    @Override
+    public Map<String, Object> getDefaults() {
+        Map<String, Object> config = new HashMap<>();
+        config.put("time_limit", 30);
+        return config;
     }
 
     @EventHandler
@@ -53,11 +65,14 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public String onRequest(OfflinePlayer p, String identifier) {
-
         if (p == null) {
             return "";
         }
 
+        final long timeNow = Calendar.getInstance().getTimeInMillis();
+        final long startTime = ReactionAPI.getStartTime();
+        final long timeDifference = (Math.abs(timeNow - startTime)) / 1000;
+        final int timeLimit = this.getInt("time_limit", 30);
         final Object result;
 
         switch (identifier.toLowerCase()) {
@@ -83,13 +98,31 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
             case "reaction_word":
                 result = ReactionAPI.getReactionWord() != null ? ReactionAPI.getReactionWord() : " ";
                 break;
+            case "latest_winner":
+                result = getWinner != null ? getWinner.getName() : " ";
+                break;
+
 
             case "start_time":
                 result = ReactionAPI.getStartTime();
                 break;
 
-            case "latest_winner":
-                result = getWinner != null ? getWinner.getName() : " ";
+            case "time_in_seconds":
+                if (!ReactionAPI.isStarted()) {
+                    result = 0;
+                    break;
+                }
+
+                result = timeDifference;
+                break;
+
+            case "time_remaining":
+                if (!ReactionAPI.isStarted()) {
+                    result = 0;
+                    break;
+                }
+
+                result = timeLimit - timeDifference;
                 break;
 
             default:
