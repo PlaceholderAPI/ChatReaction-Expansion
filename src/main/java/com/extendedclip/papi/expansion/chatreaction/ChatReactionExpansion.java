@@ -1,30 +1,22 @@
 package com.extendedclip.papi.expansion.chatreaction;
 
-import me.clip.chatreaction.ChatReaction;
 import me.clip.chatreaction.ReactionAPI;
+import me.clip.chatreaction.ChatReaction;
+
 import me.clip.chatreaction.events.ReactionWinEvent;
-import me.clip.placeholderapi.expansion.Cacheable;
 import me.clip.placeholderapi.expansion.Configurable;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.EventHandler;
 
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Calendar;
 
-public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Cacheable, Configurable {
-
-    Player getWinner;
-
-    @Override
-    public boolean canRegister() {
-        return Bukkit.getPluginManager().getPlugin(getRequiredPlugin()) != null;
-    }
+public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Configurable {
 
     @Override
     public String getAuthor() {
@@ -43,12 +35,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public String getVersion() {
-        return "1.3.0";
-    }
-
-    @Override
-    public void clear() {
-        getWinner = null;
+        return "1.4";
     }
 
     @Override
@@ -58,78 +45,65 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
         return config;
     }
 
+    private Player winner;
+
     @EventHandler
     public void onReactionWin(ReactionWinEvent event) {
-        getWinner = event.getWinner();
+        winner = event.getWinner();
     }
 
     @Override
-    public String onRequest(OfflinePlayer p, String identifier) {
+    public String onRequest(final OfflinePlayer p, final String input) {
         if (p == null) {
             return "";
         }
 
+        final int timeLimit = this.getInt("time_limit", 30);
+        final boolean reactionHasStarted = ReactionAPI.isStarted();
         final long timeNow = Calendar.getInstance().getTimeInMillis();
         final long startTime = ReactionAPI.getStartTime();
         final long timeDifference = (Math.abs(timeNow - startTime)) / 1000;
-        final int timeLimit = this.getInt("time_limit", 30);
-        final Object result;
 
-        switch (identifier.toLowerCase()) {
+        switch (input.toLowerCase()) {
             case "wins":
                 return String.valueOf(ReactionAPI.getWins(p));
 
             case "type":
-                if (ReactionAPI.isStarted()) {
-                    result = ChatReaction.isScrambled() ? "scramble" : "reaction";
-                } else {
-                    result = "none";
+                if (!ReactionAPI.isStarted()) {
+                    return "none";
                 }
-                break;
+                return ChatReaction.isScrambled() ? "Scramble" : "Reaction";
 
             case "active_round":
-                result = ReactionAPI.isStarted();
-                break;
+                return String.valueOf(reactionHasStarted);
 
             case "display_word":
-                result = ReactionAPI.getDisplayWord() != null ? ReactionAPI.getDisplayWord() : " ";
-                break;
+                final String displayWord = ReactionAPI.getDisplayWord();
+                return displayWord != null ? displayWord : "";
 
             case "reaction_word":
-                result = ReactionAPI.getReactionWord() != null ? ReactionAPI.getReactionWord() : " ";
-                break;
-            case "latest_winner":
-                result = getWinner != null ? getWinner.getName() : " ";
-                break;
+                final String reactionWord = ReactionAPI.getReactionWord();
+                return reactionWord != null ? reactionWord : "";
 
+            case "latest_winner":
+                return winner != null ? winner.getName() : "";
 
             case "start_time":
-                result = ReactionAPI.getStartTime();
-                break;
+                return String.valueOf(startTime);
 
             case "time_in_seconds":
-                if (!ReactionAPI.isStarted()) {
-                    result = 0;
-                    break;
+                if (!reactionHasStarted) {
+                    return "0";
                 }
-
-                result = timeDifference;
-                break;
+                return String.valueOf(timeDifference);
 
             case "time_remaining":
-                if (!ReactionAPI.isStarted()) {
-                    result = 0;
-                    break;
+                if (!reactionHasStarted) {
+                    return "0";
                 }
-
-                result = timeLimit - timeDifference;
-                break;
-
-            default:
-                return null;
+                return String.valueOf(timeLimit - timeDifference);
         }
-        return String.valueOf(result);
+
+        return null;
     }
 }
-
-
