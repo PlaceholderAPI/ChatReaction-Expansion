@@ -3,9 +3,9 @@ package com.extendedclip.papi.expansion.chatreaction;
 import me.clip.chatreaction.ReactionAPI;
 import me.clip.chatreaction.ChatReaction;
 
-import me.clip.chatreaction.ReactionConfig;
 import me.clip.chatreaction.events.ReactionWinEvent;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import me.clip.placeholderapi.expansion.Configurable;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
 import org.bukkit.OfflinePlayer;
@@ -13,11 +13,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Calendar;
 
-public class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
-
-    static ReactionConfig config;
+public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Configurable {
 
     @Override
     public String getAuthor() {
@@ -36,7 +36,14 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public String getVersion() {
-        return "1.5";
+        return "1.4";
+    }
+
+    @Override
+    public Map<String, Object> getDefaults() {
+        Map<String, Object> config = new HashMap<>();
+        config.put("time_limit", 30);
+        return config;
     }
 
     private Player winner;
@@ -47,12 +54,12 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
     }
 
     @Override
-    public String onRequest(final OfflinePlayer player, final String input) {
-        if (player == null) {
+    public String onRequest(final OfflinePlayer p, final String input) {
+        if (p == null) {
             return "";
         }
 
-        final int timeLimit = config.timeLimit();
+        final int timeLimit = this.getInt("time_limit", 30);
         final boolean reactionHasStarted = ReactionAPI.isStarted();
         final long timeNow = Calendar.getInstance().getTimeInMillis();
         final long startTime = ReactionAPI.getStartTime();
@@ -60,7 +67,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
         switch (input.toLowerCase()) {
             case "wins":
-                return String.valueOf(ReactionAPI.getWins(player));
+                return String.valueOf(ReactionAPI.getWins(p));
 
             case "type":
                 if (!reactionHasStarted) {
