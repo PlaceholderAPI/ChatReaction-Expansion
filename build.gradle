@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.extendedclip'
-version '1.5'
+version '1.4'
 
 repositories {
     mavenCentral()
