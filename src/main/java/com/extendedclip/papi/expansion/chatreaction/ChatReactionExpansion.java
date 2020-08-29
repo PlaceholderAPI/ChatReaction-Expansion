@@ -54,8 +54,8 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
     }
 
     @Override
-    public String onRequest(final OfflinePlayer p, final String input) {
-        if (p == null) {
+    public String onRequest(final OfflinePlayer player, final String input) {
+        if (player == null) {
             return "";
         }
 
@@ -67,7 +67,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
         switch (input.toLowerCase()) {
             case "wins":
-                return String.valueOf(ReactionAPI.getWins(p));
+                return String.valueOf(ReactionAPI.getWins(player));
 
             case "type":
                 if (!reactionHasStarted) {
