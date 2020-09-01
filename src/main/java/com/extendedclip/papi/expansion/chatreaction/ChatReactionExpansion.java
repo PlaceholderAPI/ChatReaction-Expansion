@@ -16,7 +16,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
@@ -42,7 +44,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public String getVersion() {
-        return "1.5";
+        return "1.6";
     }
 
     private Player winner;
@@ -57,12 +59,6 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
         if (player == null) {
             return null;
         }
-
-        final int timeLimit = config.timeLimit();
-        final boolean reactionHasStarted = ReactionAPI.isStarted();
-        final long timeNow = Calendar.getInstance().getTimeInMillis();
-        final long startTime = ReactionAPI.getStartTime();
-        final long timeDifference = (Math.abs(timeNow - startTime)) / 1000;
 
         if (input.startsWith("wins_")) {
             final OfflinePlayer target = Bukkit.getOfflinePlayer(input.substring(5));
@@ -92,9 +88,16 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
             }
         }
 
+        final int timeLimit = config.timeLimit();
+        final boolean reactionHasStarted = ReactionAPI.isStarted();
+        final long timeNow = Calendar.getInstance().getTimeInMillis();
+        final long startTime = ReactionAPI.getStartTime();
+        final long timeDifference = (Math.abs(timeNow - startTime)) / 1000;
+
         switch (input.toLowerCase()) {
             case "wins":
                 return String.valueOf(ReactionAPI.getWins(player));
+
             case "type":
                 if (!reactionHasStarted) {
                     return "none";
@@ -118,6 +121,12 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
             case "start_time":
                 return String.valueOf(startTime);
 
+            case "start_time_formatted":
+                if (!reactionHasStarted) {
+                    return "";
+                }
+                return formatDate(startTime);
+
             case "time_in_seconds":
                 if (!reactionHasStarted) {
                     return "0";
@@ -132,5 +141,11 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
         }
 
         return null;
+    }
+
+    public String formatDate(long time) {
+        SimpleDateFormat format = PlaceholderAPIPlugin.getDateFormat();
+        Date unixSeconds = new Date(time);
+        return format.format(unixSeconds);
     }
 }
