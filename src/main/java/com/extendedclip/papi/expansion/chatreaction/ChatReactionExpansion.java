@@ -42,7 +42,7 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
 
     @Override
     public String getVersion() {
-        return "1.4";
+        return "1.5";
     }
 
     private Player winner;
