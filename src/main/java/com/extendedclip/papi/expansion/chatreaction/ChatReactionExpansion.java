@@ -2,22 +2,28 @@ package com.extendedclip.papi.expansion.chatreaction;
 
 import me.clip.chatreaction.ReactionAPI;
 import me.clip.chatreaction.ChatReaction;
-
+import me.clip.chatreaction.ReactionConfig;
 import me.clip.chatreaction.events.ReactionWinEvent;
+
+import me.clip.chatreaction.reactionplayer.ReactionPlayer;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
-import me.clip.placeholderapi.expansion.Configurable;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Calendar;
+import java.util.List;
 
-public class ChatReactionExpansion extends PlaceholderExpansion implements Listener, Configurable {
+public class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
+
+    final ChatReaction plugin = JavaPlugin.getPlugin(ChatReaction.class);
+    final ReactionConfig config = new ReactionConfig(plugin);
+    final ReactionAPI api = new ReactionAPI();
 
     @Override
     public String getAuthor() {
@@ -39,13 +45,6 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
         return "1.4";
     }
 
-    @Override
-    public Map<String, Object> getDefaults() {
-        Map<String, Object> config = new HashMap<>();
-        config.put("time_limit", 30);
-        return config;
-    }
-
     private Player winner;
 
     @EventHandler
@@ -56,19 +55,46 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
     @Override
     public String onRequest(final OfflinePlayer player, final String input) {
         if (player == null) {
-            return "";
+            return null;
         }
 
-        final int timeLimit = this.getInt("time_limit", 30);
+        final int timeLimit = config.timeLimit();
         final boolean reactionHasStarted = ReactionAPI.isStarted();
         final long timeNow = Calendar.getInstance().getTimeInMillis();
         final long startTime = ReactionAPI.getStartTime();
         final long timeDifference = (Math.abs(timeNow - startTime)) / 1000;
 
+        if (input.startsWith("wins_")) {
+            final OfflinePlayer target = Bukkit.getOfflinePlayer(input.substring(5));
+            return String.valueOf(ReactionAPI.getWins(target));
+        }
+
+        if (input.startsWith("top_")) {
+            final String[] args = input.split("_");
+            if (args.length < 3) return null;
+            if (Integer.parseInt(args[2]) > 10) return null;
+
+            final List<ReactionPlayer> topWinners = api.getTopWinners();
+            if (topWinners == null) return null;
+
+            if (args[1].equals("wins")) {
+                int placement = 1;
+                for (final ReactionPlayer p : topWinners) {
+                    if (String.valueOf(placement).equals(args[2])) {
+                        return String.valueOf(topWinners.get(placement - 1).getWins());
+                    } else {
+                        placement++;
+                    }
+                }
+            }
+            else if (args[1].equals("player")) {
+                return topWinners.get(Integer.parseInt(args[2]) - 1).getName();
+            }
+        }
+
         switch (input.toLowerCase()) {
             case "wins":
                 return String.valueOf(ReactionAPI.getWins(player));
-
             case "type":
                 if (!reactionHasStarted) {
                     return "none";
