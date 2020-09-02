@@ -4,8 +4,8 @@ import me.clip.chatreaction.ReactionAPI;
 import me.clip.chatreaction.ChatReaction;
 import me.clip.chatreaction.ReactionConfig;
 import me.clip.chatreaction.events.ReactionWinEvent;
-
 import me.clip.chatreaction.reactionplayer.ReactionPlayer;
+
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
@@ -61,29 +62,28 @@ public class ChatReactionExpansion extends PlaceholderExpansion implements Liste
         }
 
         if (input.startsWith("wins_")) {
-            final OfflinePlayer target = Bukkit.getOfflinePlayer(input.substring(5));
+            final OfflinePlayer target = Bukkit.getOfflinePlayer(input.substring(5)); // substring after "wins_"
             return String.valueOf(ReactionAPI.getWins(target));
         }
 
         if (input.startsWith("top_")) {
             final String[] args = input.split("_");
-            if (args.length < 3) return null;
-            if (Integer.parseInt(args[2]) > 10) return null;
+            if (args.length < 3 || Integer.parseInt(args[2]) > 10) return null; // getTopWinners only supports top 10 users, causing IndexOutOfBounds
 
             final List<ReactionPlayer> topWinners = api.getTopWinners();
             if (topWinners == null) return null;
 
             if (args[1].equals("wins")) {
                 int placement = 1;
-                for (final ReactionPlayer p : topWinners) {
+                final Iterator<ReactionPlayer> it = topWinners.iterator();
+                while (it.hasNext()) {
                     if (String.valueOf(placement).equals(args[2])) {
                         return String.valueOf(topWinners.get(placement - 1).getWins());
-                    } else {
-                        placement++;
                     }
+                    placement++;
                 }
             }
-            else if (args[1].equals("player")) {
+            if (args[1].equals("player")) {
                 return topWinners.get(Integer.parseInt(args[2]) - 1).getName();
             }
         }
