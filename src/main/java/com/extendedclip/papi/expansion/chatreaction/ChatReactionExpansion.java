@@ -16,13 +16,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Date;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
-public class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
+public final class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
 
     final ChatReaction plugin = JavaPlugin.getPlugin(ChatReaction.class);
     final ReactionConfig config = new ReactionConfig(plugin);
