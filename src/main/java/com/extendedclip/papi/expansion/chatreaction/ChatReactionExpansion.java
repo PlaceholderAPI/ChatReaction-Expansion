@@ -19,9 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.Iterator;
-import java.util.Date;
 import java.util.Calendar;
-import java.text.SimpleDateFormat;
 
 public final class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
 
