@@ -5,11 +5,11 @@ import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DateUtil {
+public final class DateUtil {
 
-    public static String formatDate(long time) {
-        SimpleDateFormat format = PlaceholderAPIPlugin.getDateFormat();
-        Date unixSeconds = new Date(time);
+    public static String formatDate(final long time) {
+        final SimpleDateFormat format = PlaceholderAPIPlugin.getDateFormat();
+        final Date unixSeconds = new Date(time);
         return format.format(unixSeconds);
     }
 }
