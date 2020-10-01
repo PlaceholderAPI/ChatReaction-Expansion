@@ -1,5 +1,6 @@
 package com.extendedclip.papi.expansion.chatreaction;
 
+import com.extendedclip.papi.expansion.chatreaction.util.DateUtil;
 import me.clip.chatreaction.ReactionAPI;
 import me.clip.chatreaction.ChatReaction;
 import me.clip.chatreaction.ReactionConfig;
@@ -125,7 +126,7 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
                 if (!reactionHasStarted) {
                     return "";
                 }
-                return formatDate(startTime);
+                return DateUtil.formatDate(startTime);
 
             case "time_in_seconds":
                 if (!reactionHasStarted) {
@@ -141,11 +142,5 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
         }
 
         return null;
-    }
-
-    public String formatDate(long time) {
-        SimpleDateFormat format = PlaceholderAPIPlugin.getDateFormat();
-        Date unixSeconds = new Date(time);
-        return format.format(unixSeconds);
     }
 }
