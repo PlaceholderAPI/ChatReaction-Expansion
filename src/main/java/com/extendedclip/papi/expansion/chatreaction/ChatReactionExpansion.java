@@ -18,7 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
-import java.util.Iterator;
 import java.util.Calendar;
 
 public final class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
@@ -44,13 +43,13 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
 
     @Override
     public String getVersion() {
-        return "1.6";
+        return "1.6.1";
     }
 
     private Player winner;
 
     @EventHandler
-    public void onReactionWin(ReactionWinEvent event) {
+    public void onReactionWin(final ReactionWinEvent event) {
         winner = event.getWinner();
     }
 
@@ -65,26 +64,26 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
             return String.valueOf(ReactionAPI.getWins(target));
         }
 
-        if (input.startsWith("top_")) {
-            final String[] args = input.split("_");
-            if (args.length < 3 || Integer.parseInt(args[2]) > 10) return null; // getTopWinners only supports top 10 users, causing IndexOutOfBounds
+        if (!input.startsWith("top_")) {
+            return null;
+        }
 
-            final List<ReactionPlayer> topWinners = api.getTopWinners();
-            if (topWinners == null) return null;
+        final String[] args = input.split("_");
+        if (args.length < 3 || Integer.parseInt(args[2]) > 10) {
+            return null; // getTopWinners only supports top 10 users, causing IndexOutOfBounds
+        }
 
-            if (args[1].equals("wins")) {
-                int placement = 1;
-                final Iterator<ReactionPlayer> it = topWinners.iterator();
-                while (it.hasNext()) {
-                    if (String.valueOf(placement).equals(args[2])) {
-                        return String.valueOf(topWinners.get(placement - 1).getWins());
-                    }
-                    placement++;
-                }
-            }
-            if (args[1].equals("player")) {
-                return topWinners.get(Integer.parseInt(args[2]) - 1).getName();
-            }
+        final List<ReactionPlayer> topWinners = api.getTopWinners();
+        if (topWinners == null) {
+            return null;
+        }
+
+        if (args[1].equals("wins")) {
+            return String.valueOf(topWinners.get(Integer.parseInt(args[2]) - 1).getWins());
+        }
+
+        if (args[1].equals("player")) {
+            return topWinners.get(Integer.parseInt(args[2]) - 1).getName();
         }
 
         final int timeLimit = config.timeLimit();
