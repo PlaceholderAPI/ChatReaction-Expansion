@@ -23,7 +23,7 @@ import java.util.Calendar;
 public final class ChatReactionExpansion extends PlaceholderExpansion implements Listener {
 
     final ChatReaction plugin = JavaPlugin.getPlugin(ChatReaction.class);
-    final ReactionConfig config = new ReactionConfig(plugin);
+    final ReactionConfig config = plugin.config;
     final ReactionAPI api = new ReactionAPI();
 
     @Override
@@ -43,7 +43,7 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
 
     @Override
     public String getVersion() {
-        return "1.6.1";
+        return "1.6.2";
     }
 
     private Player winner;
@@ -59,33 +59,6 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
             return null;
         }
 
-        if (input.startsWith("wins_")) {
-            final OfflinePlayer target = Bukkit.getOfflinePlayer(input.substring(5)); // substring after "wins_"
-            return String.valueOf(ReactionAPI.getWins(target));
-        }
-
-        if (!input.startsWith("top_")) {
-            return null;
-        }
-
-        final String[] args = input.split("_");
-        if (args.length < 3 || Integer.parseInt(args[2]) > 10) {
-            return null; // getTopWinners only supports top 10 users, causing IndexOutOfBounds
-        }
-
-        final List<ReactionPlayer> topWinners = api.getTopWinners();
-        if (topWinners == null) {
-            return null;
-        }
-
-        if (args[1].equals("wins")) {
-            return String.valueOf(topWinners.get(Integer.parseInt(args[2]) - 1).getWins());
-        }
-
-        if (args[1].equals("player")) {
-            return topWinners.get(Integer.parseInt(args[2]) - 1).getName();
-        }
-
         final int timeLimit = config.timeLimit();
         final boolean reactionHasStarted = ReactionAPI.isStarted();
         final long timeNow = Calendar.getInstance().getTimeInMillis();
@@ -98,7 +71,7 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
 
             case "type":
                 if (!reactionHasStarted) {
-                    return "none";
+                    return "";
                 }
                 return ChatReaction.isScrambled() ? "Scramble" : "Reaction";
 
@@ -138,6 +111,32 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
                 return String.valueOf(timeLimit - timeDifference);
         }
 
+        if (input.startsWith("wins_")) {
+            final OfflinePlayer target = Bukkit.getOfflinePlayer(input.substring(5)); // substring after "wins_"
+            return String.valueOf(ReactionAPI.getWins(target));
+        }
+
+        if (!input.startsWith("top_")) {
+            return null;
+        }
+
+        final String[] args = input.split("_");
+        if (args.length < 3 || Integer.parseInt(args[2]) > 10) {
+            return null; // getTopWinners only supports top 10 users, causing IndexOutOfBounds
+        }
+
+        final List<ReactionPlayer> topWinners = api.getTopWinners();
+        if (topWinners == null) {
+            return null;
+        }
+
+        if (args[1].equals("wins")) {
+            return String.valueOf(topWinners.get(Integer.parseInt(args[2]) - 1).getWins());
+        }
+
+        if (args[1].equals("player")) {
+            return topWinners.get(Integer.parseInt(args[2]) - 1).getName();
+        }
         return null;
     }
 }
