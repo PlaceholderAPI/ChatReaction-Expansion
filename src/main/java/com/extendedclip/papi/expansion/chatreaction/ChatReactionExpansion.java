@@ -121,8 +121,8 @@ public final class ChatReactionExpansion extends PlaceholderExpansion implements
         }
 
         final String[] args = input.split("_");
-        if (args.length < 3 || Integer.parseInt(args[2]) > 10) {
-            return null; // getTopWinners only supports top 10 users, causing IndexOutOfBounds
+        if (args.length < 3 || Integer.parseInt(args[2]) > config.topPlayersSize()) {
+            return null; // entering a number over the specified top players limit in the config will cause IOOB
         }
 
         final List<ReactionPlayer> topWinners = api.getTopWinners();
