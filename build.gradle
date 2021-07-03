@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'com.extendedclip'
+version '1.6.3'
+
+def javaVersion = JavaVersion.VERSION_1_8
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.extendedclip.com/content/repositories/placeholderapi'
+    }
+    maven {
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
+        url 'http://repo.extendedclip.com/content/repositories/public'
+    }
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:+'
+    compileOnly 'me.clip:placeholderapi:2.10.9'
+    compileOnly 'me.clip:chatreaction:1.8.0'
+}
